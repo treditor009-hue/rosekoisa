@@ -79,7 +79,7 @@ function exportICS(){const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Ros
 function exportData(){download('rose-assistent-backup.json',new Blob([JSON.stringify(data,null,2)],{type:'application/json'}))}
 function notify(title,body){if('Notification'in window&&Notification.permission==='granted')new Notification(title,{body,icon:'/rose-mark.svg'});clockSound()}
 async function alerts(){if(!data.settings.reminders)return;const now=Date.now();for(const ev of data.events||[]){if(ev.notified)continue;const start=new Date(ev.start||ev.date).getTime();const at=start-(Number(ev.alert)||0)*60000;if(start>now-60000&&at<=now&&at>now-65000){ev.notified=true;saveData();notify('Coming up: '+ev.title,(ev.kind||'Reminder')+' · '+fmtTime(ev.start));toast('Reminder: '+ev.title)}}for(const n of data.notes||[]){if(n.seen||!n.at||new Date(n.at).getTime()>now)continue;if(!n.notified){n.notified=true;saveData();notify('A little note for you 💌',n.title||'A message is ready');toast('A new little note is waiting in Rose Mail.')} }}
-document.addEventListener('click',async ev=>{const b=ev.target.closest('[data-act]');if(!b)return;const a=b.dataset.act,idv=b.dataset.id;try{
+document.addEventListener('click',async ev=>{const b=ev.target.closest('[data-act]');if(!b)return;if(b.classList.contains('modalshade')&&ev.target.closest('.modal'))return;const a=b.dataset.act,idv=b.dataset.id;try{
 if(a==='nav')navigate(b.dataset.page);
 if(a==='add-task-modal')taskModal();
 if(a==='add-note-modal')noteModal();
